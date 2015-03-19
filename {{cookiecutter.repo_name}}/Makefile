@@ -1,15 +1,16 @@
 .PHONY: clean-pyc clean-build docs clean
 
-PYTHON_MODULES = {{ cookiecutter.repo_name }} 
+PYTHON_MODULES = {{ cookiecutter.repo_name }}
 PYTHON_TESTS = tests
 PYTHONPATH = .
+PIP = env PYTHONPATH=$(PYTHONPATH) bin/pip
 PYLINT = env PYTHONPATH=$(PYTHONPATH) bin/pylint --disable=I0011 --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 PYTEST = env PYTHONPATH=$(PYTHONPATH) PYTEST=1 bin/py.test --result-log=./pytest.log --pdb
 PYTHON = env PYTHONPATH=$(PYTHONPATH) bin/python
 PEP8 = env PYTHONPATH=$(PYTHONPATH) bin/pep8 --repeat --ignore=E202,E501
 UWSGI = env PYTHONPATH=$(PYTHONPATH) bin/uwsgi
 UWSGI_TEST = env PYTHONPATH=$(PYTHONPATH) PYTEST=1 bin/uwsgi
-PIP_WHEEL = env PYTHONPATH=$(PYTHONPATH) bin/pip wheel -i http://pypi.douban.com/simple/ -f http://apt.yygamedev.com/python/
+PIP_WHEEL = env PYTHONPATH=$(PYTHONPATH) $(PIP) wheel -i http://pypi.douban.com/simple/ -f http://apt.yygamedev.com/python/
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -31,6 +32,10 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
+	rm -fr bin/
+	rm -fr local/
+	rm -fr include/
+	rm -fr lib/
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -62,7 +67,7 @@ bootstrap-dev:
 
 wheel: bootstrap-dev
 	echo "building wheelhouse..."
-	bin/pip install -q wheel
+	$(PIP) install -q wheel
 	$(PIP_WHEEL) -r requirements.txt -r requirements-dev.txt
 
 lint:
@@ -97,5 +102,5 @@ dist: clean
 	python setup.py bdist_wheel
 	ls -l dist
 
-install: clean
-	python setup.py install
+install: bootstrap
+	$(PYTHON) setup.py install
