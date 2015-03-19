@@ -1,0 +1,5 @@
+pytest==2.6.4
+pep8==1.5.7
+pylint==1.4.1
+WebOb==1.4
+WebTest==2.0.18

@@ -1,0 +1,36 @@
+#!/bin/sh
+set -e
+
+print_help_and_exit() {
+	echo "Usage: build-deb
+create a deb package for this project."
+	exit 1
+}
+
+# main()
+if [ "$1" = "--help" ]; then
+	print_help_and_exit
+fi
+
+VERSION=`grep 'version' setup.py | awk -F = '{print $2}' | tr -d "'" | tr -d ','`
+PKG_NAME="{{ cookiecutter.repo_name }}"
+DEST_DIR="/opt/$PKG_NAME"
+PYTHON_MODULES="{{ cookiecutter.repo_name }}"
+#PYTHON_MODULES=`echo */__init__.py|cut -d'/' -f1`
+
+if [ ! -d wheelhouse ]; then
+	make wheel
+fi
+
+fpm -t deb -s dir -n "$PKG_NAME" -v "$VERSION" --prefix "$DEST_DIR" -f \
+    --depends make \
+    -x '*__pycache__' \
+    -x '*.pyc' \
+    -x '*.pyo' \
+    -x '*.deb' \
+    --before-install deb-scripts/before-install.sh \
+    --after-install deb-scripts/after-install.sh \
+    --before-remove deb-scripts/before-remove.sh \
+    Makefile HISTORY.rst LICENSE AUTHORS.rst CONTRIBUTING.rst setup.cfg \
+    MANIFEST.in README.rst setup.py utils requirements-dev.txt requirements.txt wheelhouse conf \
+    $PYTHON_MODULES

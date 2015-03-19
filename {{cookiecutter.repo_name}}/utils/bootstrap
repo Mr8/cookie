@@ -1,0 +1,55 @@
+#!/bin/sh
+# exit immediately if any untested command fails.
+set -e
+
+if [ "$1" ]; then
+	target="$1"
+else
+	target=default
+fi
+
+if [ -e "/opt/python2.7" ]; then
+	PYTHON="/opt/python2.7/bin/python"
+elif [ -e "/opt/python2.6" ]; then
+	PYTHON="/opt/python2.6/bin/python"
+else
+	PYTHON="python2"
+fi
+
+VIRTUALENV="$PYTHON utils/virtualenv-1.9.1/virtualenv.py"
+VIRTUALENV_OPTOIN=" --distribute --extra-search-dir=./wheelhouse"
+
+[ -e wheelhouse ] || echo "Make virtualenv without wheelhouse" ; VIRTUALENV_OPTOIN=" --distribute"
+
+$VIRTUALENV $VIRTUALENV_OPTOIN ./
+
+echo "Make virtualenv success."
+PIP_INSTALL="bin/pip install"
+
+$PIP_INSTALL --no-index utils/pip-offline/*.tar.gz
+
+if [ -d wheelhouse ]; then
+    echo "Pip install with wheelhouse"
+	PIP_INSTALL="$PIP_INSTALL --use-wheel --no-index --find-links=wheelhouse"
+elif [ -d offline-packages ]; then
+    echo "Pip install with offline-packages"
+	PIP_INSTALL="$PIP_INSTALL --no-index --find-links=offline-packages"
+else
+    echo "Build online deb package, pip install with pypi mirriors"
+    $PIP_INSTALL --upgrade "setuptools>=0.8"
+	PIP_INSTALL="$PIP_INSTALL -i http://pypi.douban.com/simple/ -f http://apt.yygamedev.com/python/"
+fi
+
+case "$target" in
+	default)
+		$PIP_INSTALL -r requirements.txt
+		;;
+	dev)
+		$PIP_INSTALL -r requirements.txt -r requirements-dev.txt
+		;;
+	*)
+		echo "bootstrap target not supported: $target" > /dev/stderr
+		exit 1
+		;;
+esac
+
