@@ -15,7 +15,8 @@ Usage
 
 Generate a Python package project::
 
-    cookiecutter https://github.com/Mr8/cookie.git 
+    pip install cookiecutter
+    cookiecutter https://github.com/Mr8/cookie.git
 
 Then:
 
@@ -34,7 +35,7 @@ Similar Cookiecutter Templates
 
 * `Nekroze/cookiecutter-pypackage`_: A fork of this with a PyTest test runner,
   strict flake8 checking with Travis/Tox, and some docs and `setup.py` differences.
-  
+
 * `tony/cookiecutter-pypackage`_: Fork with py2.7+3.3 optimizations. Flask/Werkzeug-style
   test runner, ``_compat`` module and module/doc conventions. See ``README.rst`` or
   the `github comparison view`_ for exhaustive list of additions and modifications.
@@ -50,7 +51,7 @@ to create your own version. Or create your own; it doesn't strictly have to
 be a fork.
 
 * Once you have your own version working, add it to the Similar Cookiecutter
-  Templates list above with a brief description. 
+  Templates list above with a brief description.
 
 * It's up to you whether or not to rename your fork/own version. Do whatever
   you think sounds good.
