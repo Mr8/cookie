@@ -2,7 +2,7 @@
 set -e
 
 PREFIX=${PREFIX:-/opt/{{ cookiecutter.repo_name }}}
-REPODIR=${CLOUDGWHR:-/data2/{{ cookiecutter.repo_name }}}
+REPODIR=${REPODIR:-/data2/{{ cookiecutter.repo_name }}}
 LOGDIR=${LOGDIR:-/data2/log/{{ cookiecutter.repo_name }}}
 
 RUN_AS_USER=www-data
@@ -10,7 +10,7 @@ RUN_AS_USER=www-data
 mkdir -p $REPODIR
 mkdir -p $LOGDIR
 
-chown -R "$RUN_AS_USER":"$RUN_AS_USER" $CLOUDGWDIR
+chown -R "$RUN_AS_USER":"$RUN_AS_USER" $REPODIR
 chown -R "$RUN_AS_USER":"$RUN_AS_USER" $LOGDIR
 
 cd "$PREFIX"
